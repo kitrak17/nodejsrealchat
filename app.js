@@ -4,35 +4,47 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var expressValidator = require('express-validator');
+
+var routes = require('./routes/index');
+var users = require('./routes/users');
 
 var app = express();
-//var server = app.listen(3000);
-// START SERVER
-var server = app.listen(3000, "0.0.0.0", function () {
+
+var server = app.listen(3001, "0.0.0.0", function () {
   var host = server.address().address
   var port = server.address().port
  // var headers = server.address().header;
-  console.log("kitrak app listening at http://%s:%s", host, port)
+  console.log("node chat listening at http://%s:%s", host, port)
 })
 var io = require('socket.io').listen(server);
 
+
+
 io.on('connection', function(socket){
-  socket.on('chat message', function(room, msg){
-    io.emit(room, msg);
+  // Joining room & notifying users except sender
+  socket.on('join room', function(room,join){
+    socket.join(room);
+    socket.broadcast.in(room).emit('join room', join);
+  });
+
+  // Sending message to all including sender
+  socket.on('chat message', function(room,msg){
+    io.in(room).emit('chat message', msg);
+  });
+
+  // Typing status & notifying users except sender
+  socket.on('typing status', function(room,type){
+    socket.broadcast.in(room).emit('typing status', type);
   });
 });
 
-var routes = require('./routes/index');
-//var users = require('./routes/users');
 
-app.use(expressValidator());
+
 
 
 // view engine setup
-//app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-app.set('views', './views');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -43,7 +55,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-//app.use('/users', users);
+app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -75,5 +87,6 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
+
 
 module.exports = app;
