@@ -16,7 +16,7 @@ var app = express();
  // var headers = server.address().header;
   console.log("node chat listening at http://%s:%s", host, port)
 }) */
-var server = app.listen('');
+var server = app.listen('8080');
 var io = require('socket.io').listen(server);
 
 
