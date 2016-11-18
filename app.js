@@ -9,38 +9,13 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
-
-/*var server = app.listen(3001, "0.0.0.0", function () {
-  var host = server.address().address
-  var port = server.address().port
- // var headers = server.address().header;
-  console.log("node chat listening at http://%s:%s", host, port)
-}) */
-var server = app.listen('8080');
-//var io = require('socket.io').listen(server);
+var http = require( "http" ).createServer( app );
+var io = require( "socket.io" )( http );
+http.listen(8080, "127.0.0.1");
 
 
-var io = require('socket.io')({
-  transports  : [ 'xhr-polling' ],
-}).listen(server);
-
-
-io.on('connection', function(socket){
-  // Joining room & notifying users except sender
-  socket.on('join room', function(room,join){
-    socket.join(room);
-    socket.broadcast.in(room).emit('join room', join);
-  });
-
-  // Sending message to all including sender
-  socket.on('chat message', function(room,msg){
-    io.in(room).emit('chat message', msg);
-  });
-
-  // Typing status & notifying users except sender
-  socket.on('typing status', function(room,type){
-    socket.broadcast.in(room).emit('typing status', type);
-  });
+io.on('connection',function(socket){  
+    console.log("A user is connected");
 });
 
 
