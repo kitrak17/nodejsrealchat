@@ -27,7 +27,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-  var socket = io.connect('https://kartik17.herokuapp.com/');
+  var socket = io.connect(window.location.hostname);
 
   $(document).ready(function() {
       var roomName = 'Room1';
