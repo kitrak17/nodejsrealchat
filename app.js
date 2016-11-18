@@ -10,12 +10,13 @@ var users = require('./routes/users');
 
 var app = express();
 
-var server = app.listen(3001, "0.0.0.0", function () {
+/*var server = app.listen(3001, "0.0.0.0", function () {
   var host = server.address().address
   var port = server.address().port
  // var headers = server.address().header;
   console.log("node chat listening at http://%s:%s", host, port)
-}) 
+}) */
+var server = app.listen('8080');
 var io = require('socket.io').listen(server);
 
 
