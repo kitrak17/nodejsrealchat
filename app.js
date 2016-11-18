@@ -15,7 +15,7 @@ var server = app.listen(3001, "0.0.0.0", function () {
   var port = server.address().port
  // var headers = server.address().header;
   console.log("node chat listening at http://%s:%s", host, port)
-})
+}) 
 var io = require('socket.io').listen(server);
 
 
