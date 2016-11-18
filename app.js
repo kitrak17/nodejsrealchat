@@ -14,10 +14,6 @@ var io = require('socket.io').listen(http);
 
 app.set('port', (process.env.PORT || 5000));
 
-http.listen(app.get('port'), function(){
-    console.log('listening on port ' + app.get('port'));
-});
-
 /* var server = app.listen(3001, "0.0.0.0", function () {
   var host = server.address().address
   var port = server.address().port
@@ -46,6 +42,10 @@ io.on('connection', function(socket){
   });
 });
 
+
+http.listen(app.get('port'), function(){
+    console.log('listening on port ' + app.get('port'));
+});
 
 
 
