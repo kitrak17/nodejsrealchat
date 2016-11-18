@@ -10,17 +10,13 @@ var users = require('./routes/users');
 
 var app = express();
 
-var io = require('socket.io').listen(http);
-
-app.set('port', (process.env.PORT || 5000));
-
-/* var server = app.listen(3001, "0.0.0.0", function () {
+var server = app.listen(3001, "0.0.0.0", function () {
   var host = server.address().address
   var port = server.address().port
  // var headers = server.address().header;
   console.log("node chat listening at http://%s:%s", host, port)
-})  */
-
+}) 
+var io = require('socket.io').listen(server);
 
 
 
@@ -42,10 +38,6 @@ io.on('connection', function(socket){
   });
 });
 
-
-http.listen(app.get('port'), function(){
-    console.log('listening on port ' + app.get('port'));
-});
 
 
 
