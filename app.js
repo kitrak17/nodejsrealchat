@@ -1,97 +1,48 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+var express = require('express'),
+http = require('http'),
+app = express(),
+port = 8080, // Use 8079 for dev mode
+server = http.createServer(app).listen(process.env.PORT || port, function(){
+    console.log('Express server listening on port %d in %s mode', server.address().port,             app.settings.env);
+}),
+io = require('socket.io').listen(server),
+routes = require('./routes');
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
+// Configuration
 
-var app = express();
-
-/*var server = app.listen(3001, "0.0.0.0", function () {
-  var host = server.address().address
-  var port = server.address().port
- // var headers = server.address().header;
-  console.log("node chat listening at http://%s:%s", host, port)
-}) */
-var server = app.listen('8080');
-//var io = require('socket.io').listen(server);
-
-
-var io = require('socket.io')({
-  transports  : [ 'xhr-polling' ],
-}).listen(server);
-
-
-io.on('connection', function(socket){
-  // Joining room & notifying users except sender
-  socket.on('join room', function(room,join){
-    socket.join(room);
-    socket.broadcast.in(room).emit('join room', join);
-  });
-
-  // Sending message to all including sender
-  socket.on('chat message', function(room,msg){
-    io.in(room).emit('chat message', msg);
-  });
-
-  // Typing status & notifying users except sender
-  socket.on('typing status', function(room,type){
-    socket.broadcast.in(room).emit('typing status', type);
-  });
+app.configure(function() {
+    app.set('views', __dirname + '/views');
+    app.set('view engine', 'ejs');
+    app.use(express.bodyParser());
+    app.use(express.methodOverride());
+    app.use(app.router);
+    app.use(express.static(__dirname + '/public'));
 });
 
-
-
-
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', routes);
-app.use('/users', users);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+app.configure('development', function() {
+    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
-// error handlers
+app.configure('production', function() {
+    app.use(express.errorHandler());
+});
 
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
+// Heroku won't actually allow us to use WebSockets
+// so we have to setup polling instead.
+// https://devcenter.heroku.com/articles/using-socket-io-with-node-js-on-heroku
+io.configure(function () {
+    io.set("transports", ["xhr-polling"]);
+    io.set("polling duration", 10);
+});
+
+// Routes
+app.get('/', routes.index);
+
+var status = "All is well.";
+io.sockets.on('connection', function (socket) {
+    io.sockets.emit('status', { status: status }); // note the use of io.sockets to emit but         socket.on to listen
+    socket.on('reset', function (data) {
+        status = "War is imminent!";
+        io.sockets.emit('status', { status: status });
     });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
 });
-
-
-module.exports = app;
