@@ -18,10 +18,9 @@ io.on('connection',function(socket){
     console.log("A user is connected");
 });
 
-io.configure(function () {  
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
-});
+io.set("transports", ["xhr-polling"]); 
+io.set("polling duration", 10); 
+
 
 
 
