@@ -20,6 +20,11 @@ var server = app.listen('8080');
 var io = require('socket.io').listen(server);
 
 
+io.configure(function () {  
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
+
 
 io.on('connection', function(socket){
   // Joining room & notifying users except sender
