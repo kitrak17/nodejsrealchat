@@ -1,4 +1,4 @@
-<h2>Nodejs Real Chat Demo</h2>
+<h2>Nodejs Real time Chat Demo</h2>
 
 Live demo
 
