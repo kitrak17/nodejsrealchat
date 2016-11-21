@@ -10,7 +10,7 @@ var users = require('./routes/users');
 
 var app = express();
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static("public"));
 
 var server = app.listen(3001, "0.0.0.0", function () {
   var host = server.address().address
