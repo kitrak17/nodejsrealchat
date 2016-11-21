@@ -6,6 +6,10 @@ var router = express.Router();
   res.render('index', { title: 'Express' });
 });*/
 
+router.get('/', function(req, res){
+  res.sendfile('views/name.html');
+});
+
 router.get('/room1', function(req, res){
   res.sendfile('views/room1.html');
 });
