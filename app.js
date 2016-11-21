@@ -4,42 +4,12 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var http = require('http');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
-
-var server = app.listen(3001, "0.0.0.0", function () {
-  var host = server.address().address
-  var port = server.address().port
- // var headers = server.address().header;
-  console.log("node chat listening at http://%s:%s", host, port)
-}) 
-var io = require('socket.io').listen(server);
-
-
-
-io.on('connection', function(socket){
-  // Joining room & notifying users except sender
-  socket.on('join room', function(room,join){
-    socket.join(room);
-    socket.broadcast.in(room).emit('join room', join);
-  });
-
-  // Sending message to all including sender
-  socket.on('chat message', function(room,msg){
-    io.in(room).emit('chat message', msg);
-  });
-
-  // Typing status & notifying users except sender
-  socket.on('typing status', function(room,type){
-    socket.broadcast.in(room).emit('typing status', type);
-  });
-});
-
-
-
 
 
 // view engine setup
