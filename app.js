@@ -4,21 +4,19 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-const socketIO = require('socket.io');
-const PORT = process.env.PORT || 3000;
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
-const server = express()
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`));
+var app = express();
 
-const io = socketIO(server);
-//var io = require('socket.io').listen(server);
-
-
-
-
+var server = app.listen(3001, "0.0.0.0", function () {
+  var host = server.address().address
+  var port = server.address().port
+ // var headers = server.address().header;
+  console.log("node chat listening at http://%s:%s", host, port)
+})
+var io = require('socket.io').listen(server);
 
 
 
